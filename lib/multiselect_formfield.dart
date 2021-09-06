@@ -121,8 +121,10 @@ class MultiSelectFormField extends FormField<dynamic> {
                 );
 
                 if (selectedValues != null) {
-                  state.didChange(selectedValues);
-                  state.save();
+                  //state.didChange(selectedValues);
+                  //state.save();
+                  // Avoid issues with mounted. will just re render
+                  onSaved!(selectedValues);
                 }
               },
               child: InputDecorator(
