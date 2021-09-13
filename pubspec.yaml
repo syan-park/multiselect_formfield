@@ -3,6 +3,8 @@ description: A multi select form field using alert dialog to select multiple ite
 version: 0.1.7
 homepage: https://github.com/cetorres/multiselect_formfield
 
+publish_to: "none"
+
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
