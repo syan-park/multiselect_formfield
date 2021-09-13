@@ -52,11 +52,13 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.all(16),
+                // padding: EdgeInsets.all(16),
                 child: MultiSelectFormField(
-                  autovalidate: false,
+                  // autovalidate: false,
+                  required: true,
                   chipBackGroundColor: Colors.blue,
-                  chipLabelStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  chipLabelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
                   dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
                   checkBoxActiveColor: Colors.blue,
                   checkBoxCheckColor: Colors.white,

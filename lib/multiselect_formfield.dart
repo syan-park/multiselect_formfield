@@ -27,6 +27,7 @@ class MultiSelectFormField extends FormField<dynamic> {
   final Color? checkBoxCheckColor;
   final Color? checkBoxActiveColor;
   final bool enabled;
+  final bool filled;
 
   MultiSelectFormField({
     FormFieldSetter<dynamic>? onSaved,
@@ -35,6 +36,7 @@ class MultiSelectFormField extends FormField<dynamic> {
     AutovalidateMode? autovalidate = AutovalidateMode.disabled,
     this.title = const Text('Title'),
     this.hintWidget = const Text('Tap to select one or more'),
+    this.filled = true,
     this.required = false,
     this.errorText = 'Please select one or more options',
     this.leading,
@@ -71,9 +73,9 @@ class MultiSelectFormField extends FormField<dynamic> {
                 state.value.forEach((item) {
                   var existingItem;
                   try {
-                    existingItem = dataSource!.singleWhere(((itm) => itm[valueField] == item),
+                    existingItem = dataSource!.singleWhere(
+                        ((itm) => itm[valueField] == item),
                         orElse: () => null);
-
                   } catch (e) {}
 
                   selectedOptions.add(Chip(
@@ -91,44 +93,45 @@ class MultiSelectFormField extends FormField<dynamic> {
             }
 
             return InkWell(
+              onTap: !enabled
+                  ? null
+                  : () async {
+                      List? initialSelected = state.value;
+                      if (initialSelected == null) {
+                        initialSelected = [];
+                      }
 
-              onTap:  !enabled ? null :() async {
-                List? initialSelected = state.value;
-                if (initialSelected == null) {
-                  initialSelected = [];
-                }
-
-                final items = <MultiSelectDialogItem<dynamic>>[];
+                      final items = <MultiSelectDialogItem<dynamic>>[];
                       dataSource!.forEach((item) {
-                  items.add(
-                      MultiSelectDialogItem(item[valueField], item[textField]));
-                });
+                        items.add(MultiSelectDialogItem(
+                            item[valueField], item[textField]));
+                      });
 
-                List? selectedValues = await showDialog<List>(
-                  context: state.context,
-                  builder: (BuildContext context) {
-                    return MultiSelectDialog(
-                      title: title,
-                      okButtonLabel: okButtonLabel,
-                      cancelButtonLabel: cancelButtonLabel,
-                      items: items,
-                      initialSelectedValues: initialSelected,
-                      labelStyle: dialogTextStyle,
-                      dialogShapeBorder: dialogShapeBorder,
-                      checkBoxActiveColor: checkBoxActiveColor,
-                      checkBoxCheckColor: checkBoxCheckColor,
-                    );
-                  },
-                );
+                      List? selectedValues = await showDialog<List>(
+                        context: state.context,
+                        builder: (BuildContext context) {
+                          return MultiSelectDialog(
+                            title: title,
+                            okButtonLabel: okButtonLabel,
+                            cancelButtonLabel: cancelButtonLabel,
+                            items: items,
+                            initialSelectedValues: initialSelected,
+                            labelStyle: dialogTextStyle,
+                            dialogShapeBorder: dialogShapeBorder,
+                            checkBoxActiveColor: checkBoxActiveColor,
+                            checkBoxCheckColor: checkBoxCheckColor,
+                          );
+                        },
+                      );
 
-                if (selectedValues != null) {
-                  state.didChange(selectedValues);
-                  state.save();
-                }
-              },
+                      if (selectedValues != null) {
+                        state.didChange(selectedValues);
+                        state.save();
+                      }
+                    },
               child: InputDecorator(
                 decoration: InputDecoration(
-                  filled: true,
+                  filled: filled,
                   errorText: state.hasError ? state.errorText : null,
                   errorMaxLines: 4,
                   fillColor: fillColor ?? Theme.of(state.context).canvasColor,
@@ -144,20 +147,25 @@ class MultiSelectFormField extends FormField<dynamic> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
-                            child: title,
+                            child: Row(
+                              children: [
+                                title,
+                                required
+                                    ? Padding(
+                                        padding:
+                                            EdgeInsets.only(top: 5, right: 5),
+                                        child: Text(
+                                          ' *',
+                                          style: TextStyle(
+                                            color: Colors.red.shade700,
+                                            fontSize: 17.0,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(),
+                              ],
+                            ),
                           ),
-                          required
-                              ? Padding(
-                                  padding: EdgeInsets.only(top: 5, right: 5),
-                                  child: Text(
-                                    ' *',
-                                    style: TextStyle(
-                                      color: Colors.red.shade700,
-                                      fontSize: 17.0,
-                                    ),
-                                  ),
-                                )
-                              : Container(),
                           Icon(
                             Icons.arrow_drop_down,
                             color: Colors.black87,
